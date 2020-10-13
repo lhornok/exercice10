@@ -1,0 +1,37 @@
+---
+# tasks file for apache2
+#1. Cette tâche permet d’installer Apache (httpd) à l’aide du module yum
+
+- name: "apache installation"
+  apt:
+    name: "apache2"
+    state: "present"
+    force: yes
+    update_cache: yes
+
+#2. Cette tâche active le service Apache
+- name: "apache service activation"
+  service:
+    name: "apache2"
+    state: "started"
+
+#3. Tâche qui permet d'ajouter un fichier de conf pour le site Wordpress
+- name: "wordpress conf file for apache"
+  template:
+    src: apache2.j2
+    dest: /etc/apache2/sites-available/wordpress.conf
+
+#4. Lance la commande a2ensite wordpress
+- name: "run a2ensite"
+  command:
+    cmd: a2ensite wordpress
+
+#5. Lance la commande a2enmod rewrite
+- name: "run a2ensite"
+  command:
+    cmd: a2enmod rewrite
+
+#6. Lance la commande a2ensite wordpress
+- name: "reload apache2"
+  command:
+    cmd: service apache2 reload

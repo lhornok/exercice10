@@ -1,0 +1,5 @@
+---
+# var for /etc/apache2/sites-available/wordpress.conf
+alias_name: 'blog'
+wordpress_dir: '/usr/share/wordpress'
+wordpress_content_dir: '/wp-content'

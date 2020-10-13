@@ -1,0 +1,13 @@
+---
+- hosts: apache
+  user: ubuntu
+  roles:
+  - apache
+
+- hosts: wordpress
+  user: ubuntu
+  vars_files:
+    ['roles/wordpress/vars/vault','roles/wordpress/vars/loadbalancer.yml']
+  roles:
+  - php
+  - wordpress

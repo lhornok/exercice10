@@ -1,0 +1,77 @@
+---
+# tasks file for wordpress
+#
+#1. Installation Wordpress et mysql-client
+- name: Install Wordpress
+  apt:
+    name:  ["wordpress","mysql-client"]
+    state: "present"
+    force: yes
+    update_cache: yes
+
+#2. Paramétrage du fichier de configuration Wordpress
+- name: Wordpress config
+  template:
+    src: config-default.j2
+    dest: /etc/wordpress/config-default.php 
+
+#3. Création du fichier pour initialiser la base wordpress 
+- name: Mysql init script
+  template:
+    src: mysqlinit.j2
+    dest: $HOME/mysqlinit.sql
+
+#4. lancement du script d'initialisation de la base wordpress
+- name: "Run sql script to init wordpress database"
+  shell: mysql --host="{{ dbhost }}" --user="{{ dbuser }}" --password="{{ dbpassword }}" -P "{{ dbport }}" < $HOME/mysqlinit.sql
+
+#5. copie fichier dump mysql
+- name: copy dump mysql
+  copy:
+    src: dump.wordpress.sql
+    dest: $HOME/dump.wordpress.sql
+
+#6. load mysql dump
+- name: load mysql dump
+  shell: mysql --host="{{ dbhost }}" --user="{{ dbuser }}" --password="{{ dbpassword }}" -P "{{ dbport }}" "{{ dbname }}" < $HOME/dump.wordpress.sql
+
+#7. check if file exist
+- name: Check .htaccess
+  stat:
+    path: "{{ wphacessfile }}"
+  register: stat_result
+
+#8. unlink
+- name: "Change owner"
+  shell: unlink "{{ wphacessfile }}"
+  when: stat_result.stat.exists
+
+#9. wordpress copie
+- name: Wordpress copy
+  copy:
+    src: wordpress.tar.gz
+    dest: $HOME/wordpress.tar.gz 
+
+#10. uncompress worpress
+- name: uncompress wordpress
+  shell: tar -zxf $HOME/wordpress.tar.gz -C /usr/share
+
+#11. copy file
+- name: Copy file with owner and permissions
+  copy:
+    src: htaccess
+    dest: "{{ wphacessfile }}"
+
+#12. lancement du script d'initialisation de la base wordpress
+- name: "Change owner"
+  shell: chown -R www-data:www-data /usr/share/wordpress
+
+#13. Update db avec nom du load balancer
+- name: "Update DB load balancer"
+  shell: php /usr/share/wordpress/Search-Replace-DB/srdb.cli.php -h "{{ dbhost }}" -n "{{ dbname }}" -u "{{ dbuser }}" -p "{{ dbpassword }}" -P "{{ dbport }}" -s "{{ wpurlbefore }}" -r "{{ wpurlafter }}" --allow-old-php
+
+#14. Update url in functions.php
+- name: "Update functions.php with load balancer"
+  template:
+    src: functions.php.j2
+    dest: /usr/share/wordpress/wp-content/themes/hestia/functions.php

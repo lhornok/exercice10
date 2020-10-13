@@ -1,0 +1,14 @@
+Alias /{{ alias_name }} {{ wordpress_dir }}
+<Directory {{ wordpress_dir }}>
+    Options FollowSymLinks
+    AllowOverride Limit Options FileInfo
+    DirectoryIndex index.php
+    Order allow,deny
+    Allow from all
+</Directory>
+<Directory {{ wordpress_dir }}{{ wordpress_content_dir }}>
+    Options FollowSymLinks
+    Order allow,deny
+    Allow from all
+</Directory>
+

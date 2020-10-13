@@ -1,0 +1,9 @@
+---
+# tasks file for php
+#
+- name: Install php
+  apt:
+    name: ['php', 'libapache2-mod-php', 'php-mysql','php-memcached','php-mbstring']l'] 
+    state: "present"
+    force: yes
+    update_cache: yes

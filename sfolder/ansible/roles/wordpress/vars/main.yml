@@ -1,0 +1,13 @@
+---
+# WORDPRESS
+# var for content-default.php
+dbname: 'wordpress'
+dbuser: 'madadmin'
+dbpassword: "{{ vault_mysql_password }}"
+dbport: 3306
+dbhost: 'database.mademoizelle.ch'
+dbcollate: 'utf8_general_ci'
+wpcontentdir: '/usr/share/wordpress/wp-content'
+wphacessfile: '/usr/share/wordpress/.htaccess'
+wpurlbefore: 'mademoizelle-elb-tf-1190952955.eu-west-1.elb.amazonaws.com'
+wpurlafter: '{{ loadbalancer }}'

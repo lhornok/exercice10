@@ -1,0 +1,4 @@
+DROP DATABASE IF EXISTS {{ dbname }};
+CREATE DATABASE {{ dbname }};
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,ALTER ON {{ dbname }}.* TO {{ dbuser }} IDENTIFIED BY '{{ dbpassword }}';
+FLUSH PRIVILEGES;

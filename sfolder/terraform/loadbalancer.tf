@@ -2,19 +2,19 @@
 # APPLICATION LOAD BALANCER              #
 #########################################
 resource "aws_elb" "mademoizelle" {
-  name               = "mademoizelle-elb-tf"
-  internal           = false
-  subnets            = ["${aws_subnet.private_subnet_d.id}"]
-  security_groups    = [aws_security_group.sg_elb.id]
+  name            = "mademoizelle-elb-tf"
+  internal        = false
+  subnets         = ["${aws_subnet.private_subnet_d.id}"]
+  security_groups = [aws_security_group.sg_elb.id]
 
- access_logs {
-   bucket  = aws_s3_bucket.mademoizelle.bucket
-   enabled = true
- }
+  access_logs {
+    bucket  = aws_s3_bucket.mademoizelle.bucket
+    enabled = true
+  }
 
- tags = {
-   Environment = "production"
- }
+  tags = {
+    Environment = "production"
+  }
 
   listener {
     instance_port     = 80

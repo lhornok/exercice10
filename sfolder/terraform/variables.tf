@@ -1,12 +1,12 @@
 variable "region" {
-   type = string
-   description = "Region where we will create our resources"
-   default     = "eu-west-1"
+  type        = string
+  description = "Region where we will create our resources"
+  default     = "eu-west-1"
 }
 
 #Availability zones
 variable "azs" {
-  type = list(string)
+  type        = list(string)
   description = "Availability zones"
-  default = ["eu-west-1a","eu-west-1b"]
+  default     = ["eu-west-1a", "eu-west-1b"]
 }

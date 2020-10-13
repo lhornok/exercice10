@@ -24,24 +24,24 @@ resource "aws_route53_record" "www" {
 
 resource "aws_route53_record" "memcached" {
   zone_id = aws_route53_zone.private.zone_id
-  name = "memcached.mademoizelle.ch"
-  type = "CNAME"
-  ttl = "300"
+  name    = "memcached.mademoizelle.ch"
+  type    = "CNAME"
+  ttl     = "300"
   records = ["${aws_elasticache_cluster.mademoizelle.cluster_address}"]
 }
 
 resource "aws_route53_record" "database" {
   zone_id = aws_route53_zone.private.zone_id
-  name = "database.mademoizelle.ch"
-  type = "CNAME"
-  ttl = "300"
+  name    = "database.mademoizelle.ch"
+  type    = "CNAME"
+  ttl     = "300"
   records = ["${aws_db_instance.mademoizelleDB.address}"]
 }
 
 resource "aws_route53_record" "wordpress1" {
   zone_id = aws_route53_zone.private.zone_id
-  name = "wordpress1.mademoizelle.ch"
-  type = "A"
-  ttl = "300"
+  name    = "wordpress1.mademoizelle.ch"
+  type    = "A"
+  ttl     = "300"
   records = ["${aws_instance.wordpress1.private_ip}"]
 }

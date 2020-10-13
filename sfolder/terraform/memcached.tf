@@ -10,5 +10,5 @@ resource "aws_elasticache_cluster" "mademoizelle" {
   parameter_group_name = "default.memcached1.5"
   port                 = 11211
   subnet_group_name    = aws_elasticache_subnet_group.mademoizelle.id
-  security_group_ids   =  [ aws_security_group.memcached.id ]
+  security_group_ids   = [aws_security_group.memcached.id]
 }

@@ -13,7 +13,7 @@ resource "aws_s3_bucket" "bmybucket" {
     type        = "CanonicalUser"
     permissions = ["FULL_CONTROL"]
   }
-  
+
   grant {
     type        = "Group"
     permissions = ["READ", "WRITE"]

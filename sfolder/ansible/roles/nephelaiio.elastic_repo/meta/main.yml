@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  role_name: elastic-repo
+  author: Ted Cook
+  description: An Ansible role to install and configure elastic-repo
+  license: MIT
+  min_ansible_version: 2.2
+  platforms:
+    - name: EL
+      versions:
+        - 7
+    - name: Ubuntu
+      versions:
+        - bionic
+        - xenial
+    - name: Debian
+      versions:
+        - stretch
+  galaxy_tags:
+    - elastic
+    - repo
+
+dependencies: []

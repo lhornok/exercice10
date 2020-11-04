@@ -1,0 +1,28 @@
+---
+- hosts: kibana
+  user: ubuntu
+  become: yes
+  roles:
+    - role: elastic.elasticsearch
+    - role: geerlingguy.kibana
+    - role: nephelaiio.metricbeat
+  vars:
+    es_data_dirs:
+      - "/opt/elasticsearch/data"
+    es_log_dir: "/opt/elasticsearch/logs"
+    se_users:
+      native:
+        kibana4_server:
+          password: +QAY2wsx3edc
+          roles:
+            - kibana4_server
+      file:
+        es_admin:
+          password: +QAY2wsx3edc
+          roles:
+            - admin
+        testUser:
+          password: +QAY2wsx3edc
+          roles:
+            - power_user
+            - user

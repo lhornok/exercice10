@@ -1,0 +1,72 @@
+---
+- name: include variable overrides
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+        - "vars/{{ ansible_distribution }}.yml"
+        - "vars/{{ ansible_os_family }}.yml"
+        - "vars/main.yml"
+  tags:
+    - elastic-repo
+
+- name: install package requirements
+  package:
+    name: "{{ elastic_repo_package_names | default(elastic_repo_package_name_default) }}"
+    state: present
+
+- name: install elastic apt repo key
+  apt_key:
+    url: "{{ elastic_repo_gpg_key }}"
+    state: "{{ elastic_repo_state }}"
+  when:
+    - ansible_os_family == 'Debian'
+
+- name: install elastic yum repo key
+  rpm_key:
+    key: "{{ elastic_repo_gpg_key }}"
+    state: "{{ elastic_repo_state }}"
+  when:
+    - ansible_os_family == 'RedHat'
+
+- name: install elastic apt repository (elastic license)
+  apt_repository:
+    repo: "{{ elastic_repo_url | default(elastic_repo_url_els) }}"
+    filename: elastic
+    state: "{{ elastic_repo_state }}"
+  when:
+    - ansible_os_family == 'Debian'
+    - not (elastic_repo_oss | bool)
+
+- name: install elastic apt repository (oss license)
+  apt_repository:
+    repo: "{{ elastic_repo_url | default(elastic_repo_url_oss) }}"
+    filename: elastic
+    state: "{{ elastic_repo_state }}"
+  when:
+    - ansible_os_family == 'Debian'
+    - elastic_repo_oss | bool
+
+- name: install elastic yum repository (elastic license)
+  yum_repository:
+    name: elastic
+    description: "Elastic package repository"
+    baseurl: "{{ elastic_repo_url | default(elastic_repo_url_els) }}"
+    enabled: yes
+    gpgcheck: yes
+    gpgkey: "{{ elastic_repo_gpg_key }}"
+  when:
+    - ansible_os_family == 'RedHat'
+    - not (elastic_repo_oss | bool)
+
+- name: install elastic yum repository (oss license)
+  yum_repository:
+    name: elastic
+    description: "Elastic package repository"
+    baseurl: "{{ elastic_repo_url | default(elastic_repo_url_oss) }}"
+    enabled: yes
+    gpgcheck: yes
+    gpgkey: "{{ elastic_repo_gpg_key }}"
+  when:
+    - ansible_os_family == 'RedHat'
+    - elastic_repo_oss | bool

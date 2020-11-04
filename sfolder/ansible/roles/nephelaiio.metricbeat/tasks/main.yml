@@ -1,0 +1,106 @@
+---
+- name: include variable overrides
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+        - "vars/{{ ansible_distribution }}.yml"
+        - "vars/{{ ansible_os_family }}.yml"
+        - "vars/main.yml"
+  tags:
+    - metricbeat
+
+- name: configure elastic repo
+  include_role:
+    name: nephelaiio.elastic_repo
+  when: metricbeat_repo_manage | bool
+
+- block:
+
+    - name: install yum version lock support
+      package:
+        name: yum-plugin-versionlock
+      when: ansible_os_family == 'RedHat'
+
+    - name: disable yum package lock
+      command: "yum versionlock delete {{ item }}"
+      ignore_errors: yes
+      loop: "{{ [metricbeat_package_names] | flatten }}"
+      when: ansible_os_family == 'RedHat'
+      tags:
+        - skip_ansible_lint
+
+    - name: disable apt package lock
+      command: "apt-mark unhold {{ item }}"
+      loop: "{{ [metricbeat_package_names] | flatten }}"
+      when: ansible_os_family == 'Debian'
+
+  when: metricbeat_package_hold | bool
+  ignore_errors: yes
+
+- name: install metricbeat packages
+  package:
+    name: "{{ metricbeat_package_names }}"
+    state: "{{ metricbeat_package_state }}"
+
+- block:
+
+    - name: enable apt package hold
+      command: "apt-mark hold {{ item }}"
+      loop: "{{ [metricbeat_package_names] | flatten }}"
+      when:
+        - ansible_os_family == 'Debian'
+
+    - name: enable yum package lock
+      command: "yum versionlock add {{ item }}"
+      loop: "{{ [metricbeat_package_names] | flatten }}"
+      when:
+        - ansible_os_family == 'RedHat'
+      tags:
+        - skip_ansible_lint
+
+  when: metricbeat_package_hold | bool
+
+- name: inspect packages
+  package_facts:
+    manager: auto
+
+- name: manage metricbeat main configuration file
+  copy:
+    content: |
+      # Ansible managed
+
+      {{ metricbeat_conf | to_nice_yaml(indent=2) }}
+    dest: "{{ metricbeat_conf_path }}"
+  notify: restart metricbeat
+  when:
+    - metricbeat_conf_manage | bool
+
+- name: prune stale metricbeat module configuration files
+  file:
+    path: "{{ metricbeat_conf_modules_path }}/{{ module_name }}.yml.disabled"
+    state: absent
+  loop_control:
+    loop_var: module_name
+    label: "{{ module_name }}"
+  loop: "{{ metricbeat_conf_modules | map(attribute='module') | list | unique }}"
+
+- name: manage metricbeat module configuration files
+  copy:
+    dest: "{{ metricbeat_conf_modules_path }}/{{ module_name }}.yml"
+    content: |
+      ---
+      {{ module_conf | to_nice_yaml(indent=2) }}
+  vars:
+    module_conf: "{{ metricbeat_conf_modules | selectattr('module', 'equalto', module_name) | list }}"
+  loop_control:
+    loop_var: module_name
+    label: "{{ module_name }}"
+  notify: restart metricbeat
+  loop: "{{ metricbeat_conf_modules | map(attribute='module') | list | unique }}"
+
+- name: manage metricbeat services
+  service:
+    name: "{{ metricbeat_service_name }}"
+    state: "{{ metricbeat_service_status }}"
+    enabled: "{{ metricbeat_service_enabled }}"

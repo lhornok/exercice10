@@ -1,0 +1,10 @@
+*.swp
+.molecule/
+.cache/
+__pycache__/
+Gemfile.lock
+**/.ropeproject
+playbook.retry
+**/*.pyc
+.pytest_cache/
+.python-version

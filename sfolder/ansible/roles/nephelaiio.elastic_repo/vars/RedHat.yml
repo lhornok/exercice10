@@ -1,0 +1,5 @@
+# vim: sw=2 ts=2 et :
+---
+elastic_repo_url_els: "https://artifacts.elastic.co/packages/{{ elasticsearch_repo_major_version }}.x/yum"
+elastic_repo_url_oss: "https://artifacts.elastic.co/packages/oss-{{ elasticsearch_repo_major_version }}.x/yum"
+elastic_repo_package_name_default: []

@@ -1,0 +1,6 @@
+# vim: sw=2 ts=2 et :
+---
+elastic_repo_url_els: "deb https://artifacts.elastic.co/packages/{{ elasticsearch_repo_major_version }}.x/apt stable main"
+elastic_repo_url_oss: "deb https://artifacts.elastic.co/packages/oss-{{ elasticsearch_repo_major_version }}.x/apt stable main"
+elastic_repo_package_name_default:
+  - apt-transport-https

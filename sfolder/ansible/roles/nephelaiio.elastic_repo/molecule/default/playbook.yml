@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: elastic-repo
+  tasks:
+    - name: install kibana
+      package:
+        name: kibana-oss

@@ -1,0 +1,105 @@
+  access_key_id: 'AKIAVDWD63ENGVX7OKW2'
+  secret_access_key: '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'
+
+
+http://34.245.200.15:5601/
+
+
+
+2020-10-31T14:48:00.883Z	ERROR	[publisher_pipeline_output]	pipeline/output.go:154	Failed to connect to backoff(elasticsearch(https://vpc-madelk-pasewsv5gz2vt6fgkwvweld22y.eu-west-1.es.amazonaws.com:443)): Connection marked as failed because the onConnect callback failed: cannot retrieve the elasticsearch license from the /_license endpoint, Metricbeat requires the default distribution of Elasticsearch. Please make the endpoint accessible to Metricbeat so it can verify the license.: unauthorized access, could not connect to the xpack endpoint, verify your credentials
+
+
+https://discuss.elastic.co/t/getting-error-while-connecting-to-metricbeat-on-aws-elasticsearch/238673
+
+Modifier le fichier de configuration, en ajoutant les access_key_id + secret_access_key
+/etc/metricbeat/metricbeat.yml / commmenter logstash et modifier le port kibana 5601
+sudo metricbeat modules disable system
+sudo metricbeat modules enable aws
+metricbeat setup -e
+
+
+process :
+vagrant up
+vagrant ssh
+cd /srv/terraform
+terraform apply
+yes
+./output.sh
+cd /srv/ansible
+ansible-playbook -i hosts --user ubuntu --become --ask-vault-pass kibana.yml
+
+connexion au serveur : http:serveur:5601 attendre qu'il soit prêt
+
+elasticsearch n'avait pas correctement démarré, il a fallu le redémarre et après kibana également
+
+connexion à la machine hégergeant kibana en ssh
+sudo update-alternatives --config editor
+sudoedit /etc/elasticsearch/elasticsearch.yml mettre host http.host: 0.0.0.0 pour autoriser les accès d'autres machines
+sudoedit /etc/metricbeat/modules.d/aws.yml.disabled
+eu-west-1
+
+
+sudo systemctl stop metricbeat
+sudo /usr/bin/metricbeat setup -e
+sudo systemctl start metricbeat
+sudo metricbeat modules enable aws
+
+connexion à la machine qui héberge wordpress
+sudo /usr/sbin/a2enmod status
+sudoedit /etc/metricbeat/metricbeat.yml mettre la machine qui héberge le elasticsearch
+sudoedit /etc/metricbeat/modules.d/apache.yml.disabled
+sudo metricbeat modules enable apache
+sudo systemctl stop metricbeat
+sudo /usr/bin/metricbeat setup -e
+sudo systemctl start metricbeat
+
+
+sudo systemctl filebeat stop
+sudoedit /etc/filebeat/filebeat.yml
+sudoedit filebeat setup -e
+sudo filebeat modules enable system apache
+sudo systemctl filebeat start
+
+sudoedit /etc/filebeat/filebeat.yml => contenu
+
+filebeat:
+  # List of inputs.
+  inputs:
+    [{"paths": ["/var/log/*.log"], "type": "log"}]
+
+# Configure what outputs to use when sending the data collected by the beat.
+# Multiple outputs may be used.
+#output:
+
+
+  ### Logstash as output
+  logstash:
+    # The Logstash hosts
+    #hosts: ["localhost:5044"]
+
+    # Number of workers per Logstash host.
+    #worker: 1
+
+    # Optional load balance the events between the Logstash hosts
+    #loadbalance: true
+
+    # Optional index name. The default index name depends on the each beat.
+    # For Packetbeat, the default is set to packetbeat, for Topbeat
+    # top topbeat and for Filebeat to filebeat.
+    #index: filebeat
+
+setup.kibana.host: "http://10.0.105.198:5601"
+setup.dashboards.enabled: true
+
+filebeat.config.modules:
+  enabled: true
+  path: ${path.config}/modules.d/*.yml
+
+output.elasticsearch:
+  hosts: ["http://10.0.105.198:9200"]
+
+  #setup.template.enabled: true
+  #setup.template.name: "filebeat"
+  #setup.template.pattern: "filebeat-*"
+
+

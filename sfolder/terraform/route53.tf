@@ -45,3 +45,20 @@ resource "aws_route53_record" "wordpress1" {
   ttl     = "300"
   records = ["${aws_instance.wordpress1.private_ip}"]
 }
+
+resource "aws_route53_record" "elasticsearch" {
+  zone_id = aws_route53_zone.private.zone_id
+  name    = "elasticsearch.mademoizelle.ch"
+  type    = "A"
+  ttl     = "300"
+  records = ["${aws_instance.elasticsearch.private_ip}"]
+}
+
+resource "aws_route53_record" "kibana" {
+  zone_id = aws_route53_zone.private.zone_id
+  name    = "kibana.mademoizelle.ch"
+  type    = "A"
+  ttl     = "300"
+  records = ["${aws_instance.elasticsearch.private_ip}"]
+}
+

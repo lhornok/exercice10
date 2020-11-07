@@ -1,5 +1,5 @@
 ---
-- hosts: kibana
+- hosts: elasticsearch
   user: ubuntu
   become: yes
   roles:

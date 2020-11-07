@@ -11,6 +11,7 @@ provider "aws" {
 locals {
   ansible_host = templatefile("./hosts.cfg", {
     wordpress_address = aws_instance.wordpress1.public_dns
+    elastic_address = aws_instance.elasticsearch.public_dns
   })
   loadbalancer_host = templatefile("./loadbalancer.cfg", {
     loadbalancer = aws_elb.mademoizelle.dns_name

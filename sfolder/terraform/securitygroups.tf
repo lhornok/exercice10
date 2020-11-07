@@ -57,12 +57,12 @@ resource "aws_security_group" "wordpress" {
 }
 
 resource "aws_security_group" "elasticsearch" {
-  name        = "vpc_web"
+  name        = "sg_es"
   description = "Allow incoming elastic kibana connections."
 
   ingress {
     from_port   = 5601
-    to_port     = 5061
+    to_port     = 5601
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }

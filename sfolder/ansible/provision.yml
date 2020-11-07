@@ -3,6 +3,8 @@
   user: ubuntu
   roles:
   - apache
+  - geerlingguy.filebeat
+  - nephelaiio.metricbeat
 
 - hosts: wordpress
   user: ubuntu

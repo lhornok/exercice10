@@ -36,14 +36,12 @@ resource "aws_security_group" "wordpress" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    #cidr_blocks = [aws_subnet.private_subnet_d.cidr_block]
   }
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    #cidr_blocks = [aws_subnet.private_subnet_d.cidr_block]
   }
 
   egress {
@@ -57,6 +55,36 @@ resource "aws_security_group" "wordpress" {
   vpc_id = aws_vpc.main.id
 
 }
+
+resource "aws_security_group" "elasticsearch" {
+  name        = "vpc_web"
+  description = "Allow incoming elastic kibana connections."
+
+  ingress {
+    from_port   = 5601
+    to_port     = 5061
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 9200
+    to_port     = 9200
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+
+  }
+
+  vpc_id = aws_vpc.main.id
+
+}
+
 
 resource "aws_security_group" "sg_ssh" {
 

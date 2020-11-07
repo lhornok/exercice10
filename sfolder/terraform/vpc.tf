@@ -7,7 +7,6 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 
-
   tags = {
     Name = "main"
   }
@@ -67,5 +66,15 @@ resource "aws_subnet" "private_subnet_d" {
 
   tags = {
     Name = "private_subnet_d"
+  }
+}
+
+# Subnet ES
+resource "aws_subnet" "private_subnet_e" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = "10.0.105.0/24"
+
+  tags = {
+    Name = "private_subnet_e"
   }
 }

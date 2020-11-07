@@ -112,7 +112,7 @@ metricbeat_conf_logstash_loadbalance: true
 metricbeat_conf_dashboards_enabled: false
 metricbeat_conf_dashboards_kibana: false
 metricbeat_conf_template_enabled: true
-metricbeat_conf_kibana_host: 'localhost:80'
+metricbeat_conf_kibana_host: 'localhost:5601'
 
 metricbeat_conf_extra: {}
 

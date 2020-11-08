@@ -5,6 +5,7 @@
   - apache
   - geerlingguy.filebeat
   - nephelaiio.metricbeat
+  - conf.wordpress
 
 - hosts: wordpress
   user: ubuntu

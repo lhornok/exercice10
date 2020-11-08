@@ -1,0 +1,39 @@
+filebeat:
+  # List of inputs.
+  inputs:
+    [{"paths": ["/var/log/*.log"], "type": "log"}]
+
+# Configure what outputs to use when sending the data collected by the beat.
+# Multiple outputs may be used.
+#output:
+
+
+  ### Logstash as output
+  #logstash:
+    # The Logstash hosts
+    #hosts: ["localhost:5044"]
+
+    # Number of workers per Logstash host.
+    #worker: 1
+
+    # Optional load balance the events between the Logstash hosts
+    #loadbalance: true
+
+    # Optional index name. The default index name depends on the each beat.
+    # For Packetbeat, the default is set to packetbeat, for Topbeat
+    # top topbeat and for Filebeat to filebeat.
+    #index: filebeat
+
+setup.kibana.host: "http://kibana.mademoizelle.ch:5601"
+setup.dashboards.enabled: true
+
+filebeat.config.modules:
+  enabled: true
+  path: ${path.config}/modules.d/*.yml
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch.mademoizelle.ch:9200"]
+
+  #setup.template.enabled: true
+  #setup.template.name: "filebeat"
+  #setup.template.pattern: "filebeat-*"

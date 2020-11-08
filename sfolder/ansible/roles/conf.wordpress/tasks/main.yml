@@ -1,0 +1,54 @@
+---
+# tasks file for roles/conf.wordpress
+
+- name: stop filebeat
+  systemd:
+    name: filebeat
+    state: stopped
+
+- name: stop metricbeat
+  systemd:
+    name: metricbeat
+    state: stopped
+
+- name: filebaet conf file
+  copy:
+    src: filebeat.yml
+    dest: /etc/filebeat
+
+- name: filebeat apache
+  copy:
+    src: apache.yml.disabled
+    dest: /etc/filebeat/modules.d
+
+- name: metricbeat conf
+  copy:
+    src: metricbeat.yml
+    dest: /etc/metricbeat
+
+- name: filebeat active apache
+  shell: /usr/bin/filebeat modules enable system apache
+
+- name: filebeat setup
+  shell: /usr/bin/filebeat setup -e
+
+- name: metricbeat apache
+  copy:
+    src: m.apache.yml.disabled
+    dest: /etc/filebeat/modules.d/apache.yml.disabled
+
+- name: metricbeat active apache
+  shell: /usr/bin/metricbeat modules enable apache
+
+- name: metricbeat setup
+  shell: /usr/bin/metricbeat setup -e
+
+- name: filebeat start
+  systemd:
+    name: filebeat
+    state: started
+
+- name: metricbeat start
+  systemd:
+    name: metricbeat
+    state: started

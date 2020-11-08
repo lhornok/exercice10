@@ -1,0 +1,21 @@
+# Ansible managed
+
+metricbeat:
+  config:
+    modules:
+      path: /etc/metricbeat/modules.d/*.yml
+output:
+  elasticsearch:
+    enabled: true
+    hosts:
+    - elasticsearch.mademoizelle.ch:9200
+    loadbalance: true
+setup:
+  dashboards:
+    always_kibana: false
+    beat: metricbeat
+    enabled: false
+  kibana:
+    host: kibana.mademoizelle.ch:5601
+  template:
+    enabled: true

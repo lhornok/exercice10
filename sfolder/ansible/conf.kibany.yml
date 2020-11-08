@@ -1,0 +1,6 @@
+---
+- hosts: elasticsearch
+  user: ubuntu
+  become: yes
+  roles:
+    - role: conf.elasticsearch

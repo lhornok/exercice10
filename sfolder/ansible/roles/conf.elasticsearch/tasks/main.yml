@@ -1,0 +1,59 @@
+---
+# tasks file for roles/conf.elasticsearch
+
+- name: Stop Kibana
+  systemd:
+    name: kibana
+    state: stopped
+
+- name: Stop Elasticsearch
+  systemd:
+    name: elasticsearch
+    state: stopped
+
+- name: Stop metricbeat
+  systemd:
+    name: metricbeat
+    state: stopped
+
+- name: insert line
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    line: 'http.host: 0.0.0.0'
+    insertbefore: EOF
+
+- name: insert line
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    line: 'xpack.encryptedSavedObjects.encryptionKey: iqdbllewitjoktrhxhumxtwfmwzuwkaq'
+    insertbefore: EOF
+
+- name: start Elasticsearch
+  systemd:
+    name: elasticsearch
+    state: started
+
+- name: start Kibana
+  systemd:
+    name: kibana
+    state: started
+
+- name: pause for wait Kibana to be ready
+  pause:
+    minutes: 2
+
+- name: copy metricbeat file
+  copy:
+    src: aws.yml.disabled
+    dest: /etc/metricbeat/modules.d
+
+- name: activate aws metricbeat module
+  shell: /usr/bin/metricbeat modules enable aws
+
+- name: metricbeat setup
+  shell: /usr/bin/metricbeat setup -e
+
+- name: start metricbeat
+  systemd:
+    name: metricbeat
+    state: started

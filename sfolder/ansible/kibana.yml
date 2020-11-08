@@ -6,6 +6,7 @@
     - role: elastic.elasticsearch
     - role: geerlingguy.kibana
     - role: nephelaiio.metricbeat
+    - role: conf.elasticsearch
   vars:
     es_data_dirs:
       - "/opt/elasticsearch/data"
